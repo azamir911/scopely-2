@@ -30,3 +30,14 @@ func TestEffectiveProbs_ChurnBoostAndClamp(t *testing.T) {
 		}
 	})
 }
+
+// TestEffectiveProbs_ChurnClampsPointNineTimesOneThree verifies 0.9×1.3 > 1 clamps to 1.0 (retention cap).
+func TestEffectiveProbs_ChurnClampsPointNineTimesOneThree(t *testing.T) {
+	t.Parallel()
+	src := []float64{0.9}
+	dst := make([]float64, len(src))
+	got := EffectiveProbs(dst, src, 1.3, true)
+	if len(got) != 1 || math.Abs(got[0]-1.0) > 1e-12 {
+		t.Fatalf("want effective prob 1.0, got %v", got)
+	}
+}

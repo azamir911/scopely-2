@@ -5,6 +5,37 @@ import (
 	"testing"
 )
 
+// TestLoad_AssignmentFixtureThreeStagesExact locks the assignment-provided CSV shape and 1-based → slice mapping.
+func TestLoad_AssignmentFixtureThreeStagesExact(t *testing.T) {
+	t.Parallel()
+	raw := `Input,Value
+max_successes,3
+p_success_1,60%
+p_success_2,50%
+p_success_3,25%
+points_success_1,1
+points_success_2,2
+points_success_3,3
+`
+	cfg, err := Load(strings.NewReader(raw))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.MaxSuccesses != 3 {
+		t.Fatalf("MaxSuccesses=%d want 3", cfg.MaxSuccesses)
+	}
+	wantP := []float64{0.6, 0.5, 0.25}
+	wantPts := []float64{1, 2, 3}
+	for i := range wantP {
+		if cfg.PSuccess[i] != wantP[i] {
+			t.Fatalf("PSuccess[%d]=%v want %v", i, cfg.PSuccess[i], wantP[i])
+		}
+		if cfg.Points[i] != wantPts[i] {
+			t.Fatalf("Points[%d]=%v want %v", i, cfg.Points[i], wantPts[i])
+		}
+	}
+}
+
 func TestLoad_AssignmentCanonicalHeader_PercentProbabilities(t *testing.T) {
 	raw := `Input,Value
 max_successes,2
