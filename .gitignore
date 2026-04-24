@@ -1,0 +1,5 @@
+/simulator
+/bin/
+output_results.csv
+*.test
+.DS_Store
